@@ -721,4 +721,428 @@ const productsData = [
  price:120,
  imageUrl:"https://images.unsplash.com/photo-1516035069371-29a1b244cc32"
 },
+/* ================= PUMA ================= */
+
+
+{
+ name:"Puma Running Shoes",
+ brand:"Puma",
+ category:"Footwear",
+ price:120,
+ imageUrl:"https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+},
+
+{
+ name:"Puma Sports T Shirt",
+ brand:"Puma",
+ category:"Fashion",
+ price:40,
+ imageUrl:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+},
+
+{
+ name:"Puma Training Shoes",
+ brand:"Puma",
+ category:"Footwear",
+ price:130,
+ imageUrl:"https://images.unsplash.com/photo-1460353581641-37baddab0fa2"
+},
+
+{
+ name:"Puma Football Shoes",
+ brand:"Puma",
+ category:"Sports",
+ price:160,
+ imageUrl:"https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111"
+},
+
+{
+ name:"Puma Sports Jacket",
+ brand:"Puma",
+ category:"Fashion",
+ price:90,
+ imageUrl:"https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3"
+},
+
+{
+ name:"Puma Gym Bag",
+ brand:"Puma",
+ category:"Accessories",
+ price:60,
+ imageUrl:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62"
+},
+
+{
+ name:"Puma Sports Cap",
+ brand:"Puma",
+ category:"Fashion",
+ price:30,
+ imageUrl:"https://images.unsplash.com/photo-1588850561407-ed78c282e89b"
+},
+
+{
+ name:"Puma Fitness Watch",
+ brand:"Puma",
+ category:"Watches",
+ price:220,
+ imageUrl:"https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+},
+
+{
+ name:"Puma Training Shorts",
+ brand:"Puma",
+ category:"Fashion",
+ price:45,
+ imageUrl:"https://images.unsplash.com/photo-1506629905607-d9d1f5f3b8f5"
+},
+
+{
+ name:"Puma Backpack",
+ brand:"Puma",
+ category:"Accessories",
+ price:70,
+ imageUrl:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62"
+},
+
+
+
+/* ================= LEVIS ================= */
+
+
+{
+ name:"Levis Classic Jeans",
+ brand:"Levis",
+ category:"Fashion",
+ price:80,
+ imageUrl:"https://images.unsplash.com/photo-1542272604-787c3835535d"
+},
+
+{
+ name:"Levis Denim Jacket",
+ brand:"Levis",
+ category:"Fashion",
+ price:120,
+ imageUrl:"https://images.unsplash.com/photo-1551028719-00167b16eac5"
+},
+
+{
+ name:"Levis Cotton Shirt",
+ brand:"Levis",
+ category:"Fashion",
+ price:60,
+ imageUrl:"https://images.unsplash.com/photo-1603252109303-2751441dd157"
+},
+
+{
+ name:"Levis T Shirt",
+ brand:"Levis",
+ category:"Fashion",
+ price:35,
+ imageUrl:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+},
+
+{
+ name:"Levis Hoodie",
+ brand:"Levis",
+ category:"Fashion",
+ price:90,
+ imageUrl:"https://images.unsplash.com/photo-1556821840-3a63f95609a7"
+},
+
+{
+ name:"Levis Sneakers",
+ brand:"Levis",
+ category:"Footwear",
+ price:100,
+ imageUrl:"https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+},
+
+{
+ name:"Levis Casual Jacket",
+ brand:"Levis",
+ category:"Fashion",
+ price:150,
+ imageUrl:"https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3"
+},
+
+{
+ name:"Levis Cargo Pants",
+ brand:"Levis",
+ category:"Fashion",
+ price:75,
+ imageUrl:"https://images.unsplash.com/photo-1506629905607-d9d1f5f3b8f5"
+},
+
+{
+ name:"Levis Cap",
+ brand:"Levis",
+ category:"Accessories",
+ price:25,
+ imageUrl:"https://images.unsplash.com/photo-1588850561407-ed78c282e89b"
+},
+
+{
+ name:"Levis Backpack",
+ brand:"Levis",
+ category:"Accessories",
+ price:65,
+ imageUrl:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62"
+},
+
 ];
+
+const seedDB = async () => {
+
+  try {
+
+    console.log(`${chalk.blue('✓')} Seed started`);
+
+
+    // Create Admin User
+
+    if (!email || !password) {
+      throw new Error("Missing admin credentials");
+    }
+
+
+    const existingUser = await User.findOne({ email });
+
+
+    if (!existingUser) {
+
+      const user = new User({
+        email,
+        password,
+        firstName:"admin",
+        lastName:"admin",
+        role:ROLES.Admin
+      });
+
+
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(
+        user.password,
+        salt
+      );
+
+
+      await user.save();
+
+      console.log(
+        `${chalk.green('✓')} Admin created`
+      );
+
+    }
+
+
+
+    // Remove old data
+
+    await Product.deleteMany({});
+    await Brand.deleteMany({});
+    await Category.deleteMany({});
+
+
+    console.log(
+      `${chalk.yellow('!')} Old data removed`
+    );
+
+
+
+    // Create Categories
+
+    let categoryMap = {};
+
+
+    for(const cat of categoriesData){
+
+      const category = await Category.create({
+
+        name:cat,
+
+        description:
+        `Best ${cat} products`,
+
+        isActive:true
+
+      });
+
+
+      categoryMap[cat]=category._id;
+
+    }
+
+
+
+    console.log(
+      `${chalk.green('✓')} Categories created`
+    );
+
+
+
+    // Create Brands
+
+    let brandMap = {};
+
+
+    for(const brandName of brandsData){
+
+      const brand = await Brand.create({
+
+        name:brandName,
+
+        description:
+        `${brandName} products`,
+
+        isActive:true
+
+      });
+
+
+      brandMap[brandName]=brand._id;
+
+    }
+
+
+    console.log(
+      `${chalk.green('✓')} Brands created`
+    );
+
+
+
+
+    // Create Products
+
+
+    for(let i=0;i<productsData.length;i++){
+
+
+      const item = productsData[i];
+
+
+      const product = await Product.create({
+
+        sku:
+        `SKU-${Date.now()}-${i}`,
+
+
+        name:item.name,
+
+
+        description:
+        `Best quality ${item.name}`,
+
+
+        quantity:
+        Math.floor(
+          Math.random()*100
+        )+1,
+
+
+        price:item.price,
+
+
+        imageUrl:item.imageUrl,
+
+
+        imageKey:
+        `${item.name}.jpg`,
+
+
+        taxable:false,
+
+
+        isActive:true,
+
+
+        brand:
+        brandMap[item.brand],
+
+
+        category:
+        categoryMap[item.category]
+
+      });
+
+
+
+      await Category.updateOne(
+
+        {
+          _id:
+          categoryMap[item.category]
+        },
+
+        {
+          $push:{
+            products:
+            product._id
+          }
+        }
+
+      );
+
+
+    }
+
+
+
+    console.log(
+      `${chalk.green('✓')} 100 Products created`
+    );
+
+
+
+    console.log(
+      `${chalk.blue('✓')} Database seeded successfully`
+    );
+
+
+
+  }
+
+  catch(error){
+
+    console.log(
+      `${chalk.red('x')} Seed failed`
+    );
+
+    console.log(error);
+
+  }
+
+
+  finally{
+
+    await mongoose.connection.close();
+
+    console.log(
+      `${chalk.blue('✓')} MongoDB connection closed`
+    );
+
+  }
+
+};
+
+
+
+
+
+(async()=>{
+
+ try{
+
+   await setupDB();
+
+   await seedDB();
+
+ }
+
+ catch(error){
+
+   console.log(error.message);
+
+ }
+
+})();
