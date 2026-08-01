@@ -18,6 +18,11 @@ services:
       - MONGO_URI=mongodb://mongo:27017/mern_ecommerce # Default Mongo URL & DB name when running project locally
     ports:
       - '3000:3000'
+    command: [
+        'sh',
+        '-c',
+        'npm run seed:db admin@example.com admin123 && npm start'
+     ] # Default email and password arguments to database seed script - update your admin email and password
     depends_on:
       - mongo
     networks:
