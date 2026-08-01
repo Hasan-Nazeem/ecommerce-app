@@ -19,7 +19,7 @@ const password = args[1];
 
 
 const brandsData = [
-  "Apple",
+  "Realme",
   "Samsung",
   "Nike",
   "Adidas",
